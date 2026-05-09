@@ -1,52 +1,51 @@
-#include<iostream>
-#include<Windows.h>
-#include<cmath> 
-#include<iomanip> 
+#include <iostream>
+#include <Windows.h>
+#include <vector>
+#include <iomanip>
+
 using namespace std;
 
 int main() {
     long long head, tail, freq;
     QueryPerformanceFrequency((LARGE_INTEGER*)&freq);
 
-    int k = 1000; 
+    int k = 100; // 采样次数
 
-    cout << left << setw(15) << "n (规模)" 
-         << setw(20) << "总时间 (ms)" 
-         << setw(20) << "平均时间 (ms)" << endl;
-    cout << "------------------------------------------------------------" << endl;
+    cout << left << setw(10) << "n" << setw(15) << "Total(ms)" << endl;
+    cout << "--------------------------------------" << endl;
 
-  
-    for (int exp = 8; exp <= 30; exp++) {
-        int n = static_cast<int>(pow(2, exp));
-        
-  
-        int* a = new int[n];
-        for (int i = 0; i < n; i++) {
-            a[i] = i;
-        }
+    // 分配最大内存块
+    long long max_n = 1LL << 20;
+    int* a = new int[max_n];
+    for (long long i = 0; i < max_n; i++) a[i] = (int)i;
 
-        int sum;
+    for (int exp = 8; exp <= 20; exp++) {
+        long long n = 1LL << exp;
+        volatile int sum = 0; 
+
         QueryPerformanceCounter((LARGE_INTEGER*)&head);
         
+        // 重复执行 k 次以获得更稳定的测量值
         for (int cnt = 0; cnt < k; cnt++) {
             sum = 0;
-         
-            for (int i = 0; i < n; i++) {
+            for (long long i = 0; i < n; i++) {
                 sum += a[i];
             }
         }
-
+        
         QueryPerformanceCounter((LARGE_INTEGER*)&tail);
 
-        double total_time = (tail - head) * 1000.0 / freq;
-        double avg_time = total_time / k;
+        double total_time = (double)(tail - head) * 1000.0 / freq;
+        
+        // 打印耗时统计
+        cout << "2^" << left << setw(7) << exp 
+             << fixed << setprecision(3) << setw(10) << total_time << " ms" << endl;
 
-        cout << left << "2^" << setw(13) << exp 
-             << setw(20) << total_time 
-             << setw(20) << avg_time << endl;
-
-        delete[] a;
+        // --- 你想加的代码放在这里 ---
+        cout << "2^" << exp << " done." << endl;
+        // ---------------------------
     }
 
+    delete[] a;
     return 0;
 }

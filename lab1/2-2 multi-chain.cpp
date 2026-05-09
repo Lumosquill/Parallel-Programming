@@ -17,7 +17,7 @@ int main() {
     cout << "------------------------------------------------------------" << endl;
 
     
-    for (int exp = 8; exp <= 30; exp++) {
+    for (int exp = 8; exp <= 20; exp++) {
         int n = static_cast<int>(pow(2, exp));
         
 
